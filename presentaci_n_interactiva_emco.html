@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMCO — Pitch Deck Interactivo para Inversionistas</title>
+  <!-- Fuentes web modernas y muy legibles a distancia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       PALETA OFICIAL EMCO (Identidad Visual Morado/Azul + Acentos Dorados)
+       Si deseas ajustar los colores corporativos, modifica estas variables:
+       ========================================================================== */
+    :root {
+      --bg-dark: #0D0B14;
+      --bg-card: rgba(22, 19, 36, 0.78);
+      --border-card: #2D264B;
+      --emco-purple: #6D28D9;
+      --emco-violet: #A855F7;
+      --emco-blue: #2563EB;
+      --emco-gold: #FBBF24;
+      --emco-emerald: #10B981;
+      --emco-rose: #F43F5E;
+      --text-white: #FFFFFF;
+      --text-muted: #CBD5E1;
+      --text-dim: #94A3B8;
+      --grad-primary: linear-gradient(135deg, #2563EB 0%, #6D28D9 50%, #A855F7 100%);
+      --grad-text: linear-gradient(90deg, #60A5FA 0%, #C084FC 55%, #FBBF24 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden; /* Cero scroll vertical o barra lateral */
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    h1, h2, h3, .display-font {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Esferas de luz animadas en el fondo */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(110px);
+      opacity: 0.35;
+      animation: floatOrb 14s infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+      width: 480px;
+      height: 480px;
+      background: var(--emco-purple);
+      top: -120px;
+      right: -80px;
+    }
+
+    .orb-2 {
+      width: 420px;
+      height: 420px;
+      background: var(--emco-blue);
+      bottom: -140px;
+      left: -100px;
+      animation-delay: -5s;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: var(--emco-violet);
+      top: 40%;
+      left: 45%;
+      opacity: 0.18;
+      animation-delay: -9s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, -30px) scale(1.12); }
+    }
+
+    /* ==========================================================================
+       BARRA SUPERIOR MINIMALISTA
+       ========================================================================== */
+    .top-hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 62px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(13, 11, 20, 0.65);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .hud-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .slide-counter {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--emco-gold);
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+    }
+
+    .fullscreen-btn {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border-card);
+      color: var(--text-white);
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .fullscreen-btn:hover {
+      background: var(--emco-purple);
+      border-color: var(--emco-violet);
+    }
+
+    .progress-track {
+      position: fixed;
+      top: 62px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      z-index: 101;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: var(--grad-primary);
+      transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 0 12px var(--emco-violet);
+    }
+
+    /* ==========================================================================
+       CARRUSEL HORIZONTAL DE DIAPOSITIVAS (MODO PRESENTACIÓN)
+       ========================================================================== */
+    .deck-viewport {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
+
+    .deck-track {
+      display: flex;
+      width: 1000vw; /* 10 diapositivas de 100vw cada una */
+      height: 100vh;
+      transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      padding: 5.5rem 5.5rem 4.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .slide-content {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto;
+      opacity: 0.35;
+      transform: translateY(18px) scale(0.98);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .slide.active .slide-content {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ==========================================================================
+       CONTROLES LATERALES Y PUNTOS INFERIORES
+       ========================================================================== */
+    .nav-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 120;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(22, 19, 36, 0.82);
+      border: 1px solid var(--border-card);
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.3rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+    }
+
+    .nav-arrow:hover:not(:disabled) {
+      background: var(--grad-primary);
+      border-color: #c084fc;
+      transform: translateY(-50%) scale(1.08);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.55);
+    }
+
+    .nav-arrow:disabled {
+      opacity: 0.2;
+      cursor: default;
+    }
+
+    .nav-prev { left: 1.35rem; }
+    .nav-next { right: 1.35rem; }
+
+    .dots-bar {
+      position: fixed;
+      bottom: 1.35rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      display: flex;
+      gap: 0.55rem;
+      background: rgba(22, 19, 36, 0.75);
+      border: 1px solid var(--border-card);
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      width: 28px;
+      background: var(--grad-primary);
+      box-shadow: 0 0 10px var(--emco-violet);
+    }
+
+    /* ==========================================================================
+       COMPONENTES VISUALES (TARJETAS, BADGES, NÚMEROS GIGANTES)
+       ========================================================================== */
+    .pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #E9D5FF;
+      background: rgba(109, 40, 217, 0.28);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      padding: 0.38rem 0.95rem;
+      border-radius: 999px;
+      margin-bottom: 0.9rem;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.85rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 3.6vw, 3rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.55rem;
+    }
+
+    .lead {
+      font-size: clamp(1.05rem, 1.45vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 720px;
+      margin-bottom: 2rem;
+    }
+
+    .grad-txt {
+      background: var(--grad-text);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Marcador editable para datos pendientes */
+    .marker {
+      display: inline-block;
+      background: rgba(251, 191, 36, 0.16);
+      color: var(--emco-gold);
+      border: 1px dashed var(--emco-gold);
+      padding: 0.1rem 0.55rem;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.86em;
+      font-weight: 700;
+    }
+
+    /* Grids limpios */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.75rem;
+      align-items: center;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--emco-violet);
+      box-shadow: 0 14px 34px rgba(109, 40, 217, 0.22);
+    }
+
+    .icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: rgba(109, 40, 217, 0.25);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.1rem;
+      color: #C084FC;
+    }
+
+    .glass-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .glass-card p {
+      font-size: 0.96rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .giant-num {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(2.5rem, 4.3vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1;
+      color: var(--emco-gold);
+      margin-bottom: 0.45rem;
+    }
+
+    /* Simulador Interactivo del Teléfono (Slide 4) */
+    .phone-mockup {
+      background: #120F1E;
+      border: 2px solid #3B3164;
+      border-radius: 28px;
+      padding: 1.25rem;
+      max-width: 390px;
+      margin: 0 auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(109, 40, 217, 0.25);
+    }
+
+    .phone-notch {
+      width: 90px;
+      height: 6px;
+      background: #2D264B;
+      border-radius: 99px;
+      margin: 0 auto 1rem;
+    }
+
+    .cat-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .cat-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      padding: 0.45rem;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cat-btn.active {
+      background: var(--grad-primary);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .chat-bubble {
+      background: rgba(109, 40, 217, 0.22);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      padding: 0.7rem 0.9rem;
+      border-radius: 14px 14px 4px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      color: #E9D5FF;
+    }
+
+    .ai-response {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 0.85rem;
+      font-size: 0.84rem;
+    }
+
+    /* Barras de Inversión (Slide 8) */
+    .bar-group {
+      margin-bottom: 0.9rem;
+    }
+
+    .bar-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .bar-bg {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fg {
+      height: 100%;
+      background: var(--grad-primary);
+      border-radius: 99px;
+    }
+
+    /* Grid de los 5 Integrantes (Slide 10) */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .member-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+      transition: all 0.25s;
+    }
+
+    .member-card:hover {
+      border-color: var(--emco-gold);
+      transform: translateY(-4px);
+    }
+
+    .member-initial {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      margin: 0 auto 0.75rem;
+    }
+
+    /* Responsivo para pantallas pequeñas */
+    @media (max-width: 900px) {
+      .slide { padding: 4.5rem 2.2rem 4rem; overflow-y: auto; }
+      .grid-3, .grid-2, .team-grid { grid-template-columns: 1fr; gap: 0.9rem; }
+      .nav-arrow { width: 40px; height: 40px; font-size: 1rem; }
+      .nav-prev { left: 0.4rem; }
+      .nav-next { right: 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Esferas de luz de fondo -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- BARRA SUPERIOR -->
+  <header class="top-hud">
+    <div class="hud-brand" onclick="goToSlide(0)" title="Ir al inicio">
+      <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#A855F7"/>
+          </linearGradient>
+        </defs>
+        <path d="M20 3L35 9.5V20C35 29.5 28.4 36.2 20 38.5C11.6 36.2 5 29.5 5 20V9.5L20 3Z" fill="url(#logoGrad)"/>
+        <path d="M14 20.5L18.5 25L27 15.5" stroke="#FBBF24" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>EMCO</span>
+    </div>
+
+    <div class="hud-right">
+      <span class="slide-counter" id="slideCounter">01 / 10</span>
+      <button class="fullscreen-btn" id="fsBtn" title="Pantalla Completa">⛶ Pantalla Completa</button>
+    </div>
+  </header>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- FLECHAS LATERALES DE NAVEGACIÓN HORIZONTAL -->
+  <button class="nav-arrow nav-prev" id="prevBtn" aria-label="Diapositiva anterior">←</button>
+  <button class="nav-arrow nav-next" id="nextBtn" aria-label="Siguiente diapositiva">→</button>
+
+  <!-- CONTENEDOR HORIZONTAL DE LAS 10 DIAPOSITIVAS -->
+  <main class="deck-viewport">
+    <div class="deck-track" id="deckTrack">
+
+      <!-- =================================================================
+           SLIDE 1: PORTADA
+           ================================================================= -->
+      <section class="slide active">
+        <div class="slide-content" style="text-align: center;">
+          <div style="display:inline-flex; padding: 1rem; border-radius: 24px; background: rgba(109,40,217,0.18); border: 1px solid rgba(168,85,247,0.4); margin-bottom: 1.25rem;">
+            <svg width="64" height="64" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4L42 11.5V24C42 35.4 34.1 43.2 24 46C13.9 43.2 6 35.4 6 24V11.5L24 4Z" stroke="url(#logoGrad)" stroke-width="3.5" fill="rgba(37,99,235,0.15)"/>
+              <circle cx="18" cy="21" r="3.5" fill="#60A5FA"/>
+              <circle cx="30" cy="21" r="3.5" fill="#C084FC"/>
+              <path d="M14 31C17 26.5 31 26.5 34 31" stroke="#FBBF24" stroke-width="3.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div>
+            <span class="pill-tag">Pitch Deck Inversionistas · San Salvador</span>
+          </div>
+
+          <h1>EMCO</h1>
+          <p class="display-font grad-txt" style="font-size: clamp(1.4rem, 2.5vw, 2.1rem); font-weight: 800; margin-bottom: 1rem;">
+            “Compras inteligentes para emprendedores”
+          </p>
+          <p class="lead" style="margin: 0 auto 2.2rem;">
+            La plataforma móvil y web con Inteligencia Artificial que conecta negocios con proveedores verificados en segundos.
+          </p>
+
+          <button onclick="goToSlide(1)" style="background: var(--grad-primary); color:#fff; border:none; padding: 0.9rem 2rem; border-radius: 999px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 10px 25px rgba(109,40,217,0.45);">
+            Iniciar Presentación →
+          </button>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 2: QUÉ ES EMCO
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">02 · Qué es EMCO</span>
+          <h2>Un puente inteligente y libre de estafas</h2>
+          <p class="lead">Reemplazamos la búsqueda informal por un ecosistema B2B centralizado en español.</p>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="icon-box">🛍️</div>
+              <h3>1. Emprendedor</h3>
+              <p>Describe qué insumo necesita y compara precios, stock y reseñas reales <strong>100% gratis</strong>.</p>
+            </div>
+
+            <div class="glass-card" style="border-color: var(--emco-gold); background: linear-gradient(180deg, rgba(109,40,217,0.28), rgba(22,19,36,0.9));">
+              <div class="icon-box" style="background: rgba(251,191,36,0.2); color: var(--emco-gold); border-color: var(--emco-gold);">✨</div>
+              <h3>Motor IA EMCO</h3>
+              <p>Filtra proveedores auditados, cotiza en segundos y automatiza alertas de inventario.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="icon-box">🏭</div>
+              <h3>2. Proveedor Verificado</h3>
+              <p>Recibe pedidos al instante, controla su stock con IA y proyecta su demanda mensual.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 3: EL PROBLEMA
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">03 · El Problema</span>
+          <h2>85,000 negocios se surten hoy <span class="grad-txt">a ciegas</span></h2>
+          <p class="lead">Buscar materia prima en El Salvador depende de chats informales y recomendaciones sin respaldo.</p>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="icon-box" style="color:#F87171;">⏳</div>
+              <h3>Horas Perdidas</h3>
+              <p>Días cotizando chat por chat en grupos de WhatsApp y Facebook Marketplace.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="icon-box" style="color:#FBBF24;">⚠️</div>
+              <h3>Riesgo de Estafa</h3>
+              <p>Cero garantía de que el proveedor exista, entregue a tiempo o mantenga calidad.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="icon-box" style="color:#C084FC;">📉</div>
+              <h3>Precios Opacos</h3>
+              <p>Imposible comparar precios mayoristas o disponibilidad en tiempo real.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 4: SOLUCIÓN Y SIMULADOR INTERACTIVO
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <div class="grid-2">
+            <div>
+              <span class="pill-tag">04 · Solución y Diferenciación</span>
+              <h2>De días de búsqueda a <span class="grad-txt">segundos con IA</span></h2>
+              <p class="lead" style="margin-bottom: 1.4rem;">Prueba nuestro asistente inteligente a la derecha haciendo clic en cualquier rubro:</p>
+
+              <div style="display:flex; flex-direction:column; gap:0.8rem;">
+                <div class="glass-card" style="padding: 1rem 1.25rem;">
+                  <strong style="color:var(--emco-gold);">✓ Verificación en 2 Etapas:</strong> Auditoría de negocio + calificación real post-compra.
+                </div>
+                <div class="glass-card" style="padding: 1rem 1.25rem;">
+                  <strong style="color:#60A5FA;">✓ Chatbot Cotizador IA:</strong> Compara precios, ubicación y stock al instante.
+                </div>
+                <div class="glass-card" style="padding: 1rem 1.25rem;">
+                  <strong style="color:var(--emco-emerald);">✓ Inventario con IA:</strong> Alertas de stock y proyección de ventas para el proveedor.
+                </div>
+              </div>
+            </div>
+
+            <!-- MINI SIMULADOR INTERACTIVO -->
+            <div class="phone-mockup">
+              <div class="phone-notch"></div>
+              <div style="font-size:0.75rem; color:var(--text-dim); text-align:center; margin-bottom:0.6rem;">DEMO INTERACTIVA · HAZ CLIC EN UN RUBRO</div>
+              <div class="cat-tabs">
+                <button class="cat-btn active" onclick="setDemo('alimentos', this)">🍔 Alimentos</button>
+                <button class="cat-btn" onclick="setDemo('textiles', this)">👕 Textiles</button>
+                <button class="cat-btn" onclick="setDemo('empaques', this)">📦 Empaques</button>
+              </div>
+              <div class="chat-bubble" id="demoQuery">
+                “Necesito 50 lbs de queso morolique y cajas térmicas en San Salvador”
+              </div>
+              <div class="ai-response" id="demoResult">
+                <div style="color:var(--emco-emerald); font-weight:700; margin-bottom:0.35rem;">⚡ 3 Proveedores Verificados (0.4s)</div>
+                <div style="display:flex; justify-content:space-between; padding:0.45rem 0; border-bottom:1px solid var(--border-card);">
+                  <span><strong>Lácteos San Julián</strong> · ★ 4.9</span>
+                  <strong style="color:var(--emco-gold);">$2.65 / lb</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:0.45rem 0;">
+                  <span><strong>AgroDistribución SV</strong> · ★ 4.8</span>
+                  <strong style="color:var(--emco-gold);">$2.75 / lb</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 5: MODELO DE NEGOCIO
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">05 · Modelo de Negocio</span>
+          <h2>Freemium B2B: cómo gana dinero EMCO</h2>
+          <p class="lead">Cero fricción para el comprador; monetización recurrente del lado del proveedor.</p>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div style="font-size:0.8rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Emprendedores</div>
+              <div class="giant-num" style="color:var(--emco-emerald); margin-top:0.3rem;">$0.00</div>
+              <h3>Acceso Gratuito</h3>
+              <p>Búsqueda ilimitada con IA para acelerar el efecto de red. Plan Pro opcional: <strong>$1.99/mes</strong></p>
+            </div>
+
+            <div class="glass-card" style="border-color: var(--emco-gold);">
+              <div style="font-size:0.8rem; color:var(--emco-gold); text-transform:uppercase; font-weight:700;">Proveedores Verificados</div>
+              <div class="giant-num" style="margin-top:0.3rem;">$2.85<small style="font-size:1.1rem; color:var(--text-muted);">/mes</small></div>
+              <h3>Suscripción Base</h3>
+              <p>Margen neto del <strong>40% ($1.14)</strong> por proveedor. Escalonable a plan destacado <strong>$25/mes</strong>.</p>
+            </div>
+
+            <div class="glass-card">
+              <div style="font-size:0.8rem; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Pagos Wompi / Pagadito</div>
+              <!-- MARCADOR: Confirmar porcentaje de comisión por venta -->
+              <div class="giant-num" style="color:#C084FC; margin-top:0.3rem;">3%</div>
+              <h3>Por Transacción</h3>
+              <p>Comisión por cada pedido mayorista cerrado de forma segura dentro de la app.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 6: MERCADO OBJETIVO
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">06 · Mercado y Oportunidad</span>
+          <h2>El corazón productivo de El Salvador</h2>
+          <p class="lead">Enfoque inicial en San Salvador (Comida, Ropa, Artesanías y E-commerce) con expansión a Centroamérica.</p>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="giant-num">85,000+</div>
+              <h3>MYPE Activas</h3>
+              <p>Crecimiento &gt;41.7% en dos años según datos oficiales de <strong>CONAMYPE</strong>.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="giant-num" style="color:#60A5FA;">93%</div>
+              <h3>Empleadores Formales</h3>
+              <p>Casi la totalidad del tejido empresarial formal del país son micro y pequeñas empresas.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="giant-num" style="color:var(--emco-emerald);">42.9%</div>
+              <h3>Aporte al PIB</h3>
+              <p>Fuente: Observatorio MYPE. Meta capturable Año 1: <strong>850 negocios (1% de 85,000 MYPE)</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 7: TRACCIÓN Y VALIDACIÓN
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">07 · Tracción e Hitos</span>
+          <h2>Construido validando con usuarios reales</h2>
+          <p class="lead">Metodología Design Thinking + Lean Startup aplicada en campo.</p>
+
+          <div class="grid-3">
+            <div class="glass-card" style="border-top: 4px solid var(--emco-emerald);">
+              <div style="font-size:0.78rem; font-weight:800; color:var(--emco-emerald); margin-bottom:0.4rem;">✓ HITO 1 · LOGRADO</div>
+              <h3>30 Entrevistas + Demo</h3>
+              <p>Validación en San Salvador que dio origen al Chatbot IA + Prototipo web en vivo (<em>daniell411.github.io/EMCO</em>).</p>
+            </div>
+
+            <div class="glass-card" style="border-top: 4px solid var(--emco-gold);">
+              <div style="font-size:0.78rem; font-weight:800; color:var(--emco-gold); margin-bottom:0.4rem;">⚡ HITO 2 · LANZAMIENTO</div>
+              <h3>Primeros 50 Proveedores</h3>
+              <p>Captación directa y verificación inicial en San Salvador para asegurar liquidez desde el día uno.</p>
+            </div>
+
+            <div class="glass-card" style="border-top: 4px solid var(--emco-violet);">
+              <div style="font-size:0.78rem; font-weight:800; color:#C084FC; margin-bottom:0.4rem;">🚀 HITO 3 · ESCALA</div>
+              <h3>Expansión Regional</h3>
+              <p>Crecimiento hacia Santa Ana, San Miguel y mercados MYPE de Centroamérica.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 8: INVERSIÓN REQUERIDA
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">08 · Inversión Requerida</span>
+          <h2>Estructura de capital ultra eficiente</h2>
+          <p class="lead">Desarrollo propio en casa ($0 en agencias externas) para maximizar cada dólar invertido.</p>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
+                <div>
+                  <div style="font-size:0.8rem; color:var(--text-dim); font-weight:700;">CAPITAL INICIAL REQUERIDO</div>
+                  <div class="giant-num">$1,189 <small style="font-size:1rem; color:var(--text-muted);">USD</small></div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:0.8rem; color:var(--text-dim); font-weight:700;">COSTO FIJO MENSUAL</div>
+                  <div style="font-size:1.6rem; font-weight:800; color:var(--emco-emerald);">$81.50/mes</div>
+                </div>
+              </div>
+              <p style="font-size:0.88rem;">Ronda ampliada opcional para escalamiento acelerado: <strong>$5,000 USD</strong> · Horizonte: <strong>12 meses</strong> (Santa Ana y San Miguel).</p>
+            </div>
+
+            <div class="glass-card">
+              <h3 style="margin-bottom:1rem;">Desglose de Uso de Fondos</h3>
+              <div class="bar-group">
+                <div class="bar-head"><span>Equipo de Cómputo y Desarrollo ($849)</span><span>71.4%</span></div>
+                <div class="bar-bg"><div class="bar-fg" style="width:71.4%"></div></div>
+              </div>
+              <div class="bar-group">
+                <div class="bar-head"><span>Registro Oficial de Marca CNR ($190)</span><span>16.0%</span></div>
+                <div class="bar-bg"><div class="bar-fg" style="width:16%"></div></div>
+              </div>
+              <div class="bar-group" style="margin-bottom:0;">
+                <div class="bar-head"><span>Campaña Inicial Meta/Google Ads ($150)</span><span>12.6%</span></div>
+                <div class="bar-bg"><div class="bar-fg" style="width:12.6%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 9: RETORNO PARA EL INVERSIONISTA
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">09 · Retorno para el Inversionista</span>
+          <h2>Punto de equilibrio rápido y rentable</h2>
+          <p class="lead">Métricas respaldadas por nuestro Libro de Control Financiero.</p>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="giant-num">55</div>
+              <h3>Proveedores = Equilibrio</h3>
+              <p>Con solo 55 suscripciones activas de $2.85/mes se cubren los costos operativos mensuales.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="giant-num" style="color:var(--emco-emerald);">$42.70</div>
+              <h3>Utilidad Neta Mes 1</h3>
+              <p>Proyectada al iniciar con los primeros 50 proveedores ($142.50 en ingresos brutos).</p>
+            </div>
+
+            <div class="glass-card" style="border-color: var(--emco-gold);">
+              <!-- MARCADOR: Confirmar ROI estimado a 12-24 meses -->
+              <div class="giant-num">29%<small style="font-size:1rem; color:var(--text-muted);"> a 36 meses</small></div>
+              <h3>Retorno Estimado</h3>
+              <p>Recuperación proyectada en <strong>~28 meses</strong> sumando comisiones e ingresos publicitarios.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           SLIDE 10: EQUIPO Y CIERRE (5 INTEGRANTES EXACTOS)
+           ================================================================= -->
+      <section class="slide">
+        <div class="slide-content">
+          <span class="pill-tag">10 · Equipo Fundador y Contacto</span>
+          <h2>“Ningún emprendedor debería surtirse a ciegas”</h2>
+          <p class="lead" style="margin-bottom: 1.4rem;">Conoce al equipo creador de EMCO:</p>
+
+          <!-- ÚNICAMENTE LOS 5 NOMBRES SOLICITADOS -->
+          <div class="team-grid">
+            <div class="member-card">
+              <div class="member-initial">RA</div>
+              <div style="font-weight:800; font-size:1rem;">Rolando Ayala</div>
+              <div style="font-size:0.78rem; color:var(--text-dim); margin-top:0.2rem;">Co-Fundador</div>
+            </div>
+            <div class="member-card">
+              <div class="member-initial">JC</div>
+              <div style="font-weight:800; font-size:1rem;">Josué Chávez</div>
+              <div style="font-size:0.78rem; color:var(--text-dim); margin-top:0.2rem;">Co-Fundador</div>
+            </div>
+            <div class="member-card">
+              <div class="member-initial">KC</div>
+              <div style="font-weight:800; font-size:1rem;">Karla Campos</div>
+              <div style="font-size:0.78rem; color:var(--text-dim); margin-top:0.2rem;">Co-Fundadora</div>
+            </div>
+            <div class="member-card">
+              <div class="member-initial">CA</div>
+              <div style="font-weight:800; font-size:1rem;">Carlos Araya</div>
+              <div style="font-size:0.78rem; color:var(--text-dim); margin-top:0.2rem;">Co-Fundador</div>
+            </div>
+            <div class="member-card">
+              <div class="member-initial">RG</div>
+              <div style="font-weight:800; font-size:1rem;">Rebeca Gómez</div>
+              <div style="font-size:0.78rem; color:var(--text-dim); margin-top:0.2rem;">Co-Fundadora</div>
+            </div>
+          </div>
+
+          <div class="glass-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(109,40,217,0.4)); border-color: var(--emco-violet); padding: 1.35rem 1.8rem;">
+            <div>
+              <h3 style="margin-bottom:0.2rem;">¿Listo para digitalizar el abastecimiento MYPE con nosotros?</h3>
+              <p style="font-size:0.9rem;">Agenda una demostración en vivo y revisemos el libro financiero completo.</p>
+            </div>
+            <div style="font-size:0.88rem; line-height:1.65;">
+              <div>🌐 <strong>Web:</strong> <a href="https://daniell411.github.io/EMCO/" target="_blank" style="color:var(--emco-gold); text-decoration:none;">daniell411.github.io/EMCO</a></div>
+              <div>✉️ <strong>Contacto:</strong> <span class="marker">[nombre@dominio.com]</span> · <span class="marker">[+503 XXXX-XXXX]</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- INDICADORES DE PUNTOS INFERIORES -->
+  <nav class="dots-bar" id="dotsBar" aria-label="Selector de diapositivas"></nav>
+
+  <!-- =========================================================================
+       LÓGICA DE CARRUSEL HORIZONTAL, TECLADO, SWIPE Y SIMULADOR IA
+       ========================================================================= -->
+  <script>
+    const track = document.getElementById('deckTrack');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const dotsBar = document.getElementById('dotsBar');
+    const fsBtn = document.getElementById('fsBtn');
+
+    const total = slides.length;
+    let current = 0;
+
+    // Crear puntos inferiores dinámicamente
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (idx === 0 ? ' active' : '');
+      dot.title = `Ir a diapositiva ${idx + 1}`;
+      dot.onclick = () => goToSlide(idx);
+      dotsBar.appendChild(dot);
+    });
+
+    const dots = Array.from(dotsBar.children);
+
+    function goToSlide(index) {
+      if (index < 0 || index >= total) return;
+      current = index;
+
+      // Desplazamiento horizontal hacia la derecha
+      track.style.transform = `translateX(-${current * 100}vw)`;
+
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+
+      counter.textContent = `${String(current + 1).padStart(2, '0')} / ${total}`;
+      progressFill.style.width = `${((current + 1) / total) * 100}%`;
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+    }
+
+    prevBtn.onclick = () => goToSlide(current - 1);
+    nextBtn.onclick = () => goToSlide(current + 1);
+
+    // Navegación con flechas del teclado y barra espaciadora
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        goToSlide(current + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToSlide(current - 1);
+      }
+    });
+
+    // Soporte táctil (Swipe izquierda / derecha)
+    let touchStartX = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? goToSlide(current + 1) : goToSlide(current - 1);
+      }
+    }, { passive: true });
+
+    // Botón de Pantalla Completa
+    fsBtn.onclick = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    };
+
+    // Simulador interactivo del Chatbot IA en la Diapositiva 4
+    const demoData = {
+      alimentos: {
+        query: '“Necesito 50 lbs de queso morolique y cajas térmicas en San Salvador”',
+        items: [
+          { name: 'Lácteos San Julián', rate: '★ 4.9', price: '$2.65 / lb' },
+          { name: 'AgroDistribución SV', rate: '★ 4.8', price: '$2.75 / lb' }
+        ]
+      },
+      textiles: {
+        query: '“Busco 100 yardas de tela algodón piqué color negro con entrega hoy”',
+        items: [
+          { name: 'Textiles Cuscatlán', rate: '★ 4.9', price: '$3.40 / yd' },
+          { name: 'Importadora Hilos SV', rate: '★ 4.7', price: '$3.55 / yd' }
+        ]
+      },
+      empaques: {
+        query: '“Cotizar 500 bolsas kraft biodegradables con sello personalizado”',
+        items: [
+          { name: 'EcoPack Centroamérica', rate: '★ 5.0', price: '$0.14 c/u' },
+          { name: 'Cartones del Pacífico', rate: '★ 4.8', price: '$0.16 c/u' }
+        ]
+      }
+    };
+
+    function setDemo(key, btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const d = demoData[key];
+      document.getElementById('demoQuery').textContent = d.query;
+      document.getElementById('demoResult').innerHTML = `
+        <div style="color:var(--emco-emerald); font-weight:700; margin-bottom:0.35rem;">⚡ Proveedores Verificados (0.3s)</div>
+        <div style="display:flex; justify-content:space-between; padding:0.45rem 0; border-bottom:1px solid var(--border-card);">
+          <span><strong>${d.items[0].name}</strong> · ${d.items[0].rate}</span>
+          <strong style="color:var(--emco-gold);">${d.items[0].price}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:0.45rem 0;">
+          <span><strong>${d.items[1].name}</strong> · ${d.items[1].rate}</span>
+          <strong style="color:var(--emco-gold);">${d.items[1].price}</strong>
+        </div>
+      `;
+    }
+
+    // Inicializar estado
+    goToSlide(0);
+  </script>
+</body>
+</html>
